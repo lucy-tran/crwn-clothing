@@ -4,10 +4,12 @@ import { Route, Switch } from "react-router-dom";
 
 import HomePage from "./pages/homepage/homepage.component.jsx";
 import ShopPage from "./pages/shop/shop.component.jsx";
+import Header from "../src/components/header/header.component.jsx";
 
 function App() {
   return (
     <div className="App">
+      <Header />
       <Switch>
         {/* Switch is used to prevent rendering 2 pages at a time. 
         The moment it sees some URL match, it's gonna render that page
