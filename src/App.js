@@ -38,17 +38,12 @@ class App extends React.Component {
         //Check if our database has updated at that reference with any new data
         //Similar to onAuthStateChanged, we call onSnapshot
         userRef.onSnapshot((snapShot) => {
-          this.setState(
-            {
-              currentUser: {
-                id: snapShot.id,
-                ...snapShot.data(),
-              },
+          this.setState({
+            currentUser: {
+              id: snapShot.id,
+              ...snapShot.data(),
             },
-            () => {
-              console.log(this.state);
-            }
-          );
+          });
         });
       } else {
         this.setState({ currentUser: userAuth });
