@@ -6,7 +6,7 @@ import HomePage from "./pages/homepage/homepage.component.jsx";
 import ShopPage from "./pages/shop/shop.component.jsx";
 import Header from "../src/components/header/header.component.jsx";
 import SignInAndSignUpPage from "./pages/sign-in-sign-up/sign-in-sign-up.component";
-import { auth } from "./firebase/firebase.utils";
+import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
 import { render } from "@testing-library/react";
 
 class App extends React.Component {
@@ -20,13 +20,39 @@ class App extends React.Component {
 
   unSubscribeFromAuth = null;
 
+  // componentDidMount() {
+  //   this.unSubscribeFromAuth = auth.onAuthStateChanged((user) => {
+  //     createUserProfileDocument(user);
+  //     //open subscription is an open messaging system between our
+  //     //application and our firebase. Whenever any changes occur on Firebase from any source
+  //     //related to this app, Firebase sends out a message that says the Auth status changes
+  //     this.setState({ currentUser: user });
+  //     // console.log(user);
+  //   });
+  // }
+
   componentDidMount() {
-    this.unSubscribeFromAuth = auth.onAuthStateChanged((user) => {
-      //open subscription is an open messaging system between our
-      //application and our firebase. Whenever any changes occur on Firebase from any source
-      //related to this app, Firebase sends out a message that says the Auth status changes
-      this.setState({ currentUser: user });
-      console.log(user);
+    this.unSubscribeFromAuth = auth.onAuthStateChanged(async (userAuth) => {
+      if (userAuth) {
+        const userRef = await createUserProfileDocument(userAuth);
+        //Check if our database has updated at that reference with any new data
+        //Similar to onAuthStateChanged, we call onSnapshot
+        userRef.onSnapshot((snapShot) => {
+          this.setState(
+            {
+              currentUser: {
+                id: snapShot.id,
+                ...snapShot.data(),
+              },
+            },
+            () => {
+              console.log(this.state);
+            }
+          );
+        });
+      } else {
+        this.setState({ currentUser: userAuth });
+      }
     });
   }
 
